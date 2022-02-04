@@ -13,19 +13,44 @@ from selenium.webdriver.common.alert import Alert
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import ElementNotInteractableException
+from selenium.common.exceptions import SessionNotCreatedException
+import getpass
 
 
-SolicitationDesc = 'Resumo teste'#str(input('Resumo da SC: '))
-SolicitationMotive = 'Justificativa teste'#str(input('Justificativa: '))
-driver = webdriver.Chrome("C:\\Users\\guiga\\Documents\\PyScripts\\ExternalDrivers\\chromedriver.exe")
+VERSION = '1.0.2'
 
-EXC = pd.ExcelFile("C:\\Users\\guiga\\Sistema FIEB\\Projeto OrientAgro - Documentos\\General\\Documentos de Compras\\TR1\\TR1.xlsx")
+
+print('______________________________________________________')
+print("Automatização de Solicitação de Compras do Portal de Compras FIEB")
+print('Versão ' + VERSION)
+print("Desenvolvido por Guilherme Freire")
+print('______________________________________________________\n\n')
+
+
+
+user = input("Usuário: ")
+passw = getpass.getpass('Senha: ')
+
+
+try:
+    driver = webdriver.Chrome(".\\chromedriver.exe")
+except SessionNotCreatedException:
+    print('\n\nVersão do driver incompatível!')
+    print('Necessário realizar o download do driver com versão adequada ao seu navegador')
+    input('[Pressione ENTER para encerrar]')
+    exit()
+EXC = pd.ExcelFile(".\\Cadastro.xlsx")
 EXC = pd.ExcelFile.parse(EXC)
+
+SolicitationDesc = str(EXC['Resumo'][0])#str(input('Resumo da SC: '))
+SolicitationMotive = str(EXC['Justificativa'][0])#str(input('Justificativa: '))
 
 # ******************************** First Loggin ********************************** #
 driver.get('https://compras.fieb.org.br/core/default.aspx?U=637719883608560754')
-driver.find_element(By.ID,'ctl00_ctl11_tbxLogin').send_keys('guilherme.freire')
-driver.find_element(By.ID,'ctl00_ctl11_tbxSenha').send_keys('meridian99')
+driver.find_element(By.ID,'ctl00_ctl11_tbxLogin').send_keys(user)
+driver.find_element(By.ID,'ctl00_ctl11_tbxSenha').send_keys(passw)
 driver.find_element(By.ID,'ctl00_ctl11_btnAcessar').click()
 sleep(2)
 # ******************************************************************************* #
@@ -47,44 +72,18 @@ driver.find_element(By.ID,'ckbClasse_1465').click()
 driver.switch_to.window(parent_window)
 sleep(1)
 driver.find_element(By.ID, 'btnSalvar').click()
-sleep(0.5)
+sleep(1)
 PopUp = Alert(driver)
 PopUp.accept()
 sleep(0.5)
 SolicitationCode = driver.find_element(By.ID, '_cORDEM_COMPRA_x_sCdOrdemCompraEmpresa').text
 print(SolicitationCode)
-# Acessing the third window # (Currently Unavailible)
-#driver.find_element(By.ID, 'tabAba2').click()
-#driver.find_element(By.ID, 'img').click()
-#parent_window = driver.current_window_handle
-#child_window = driver.window_handles[1]
-#driver.switch_to.window(child_window)
-#driver.find_element(By.ID,'ckbClasse_17124').click()
-#driver.switch_to.window(parent_window)
-#sleep(1)
-#driver.find_element(By.ID, '_cORDEM_COMPRA_x_nCdAcao').send_keys('OUTROS')
-#driver.find_element(By.ID, '_cORDEM_COMPRA_x_nCdFontePagadora').send_keys('PROJETO')
-#driver.find_element(By.ID, 'img').click()
-
-#parent_window = driver.current_window_handle
-#child_window = driver.window_handles[1]
-#driver.switch_to.window(child_window)
-#driver.find_element(By.ID,'ctl00_campoPesquisa_sNmUsuario').send_keys('Jovelino')
-#sleep(0.5)
-#driver.find_element(By.ID, 'rdbList').click()
-#driver.find_element(By.ID, 'ctl00_conteudoBotoes_btnConfirmar').click()
-#driver.switch_to.window(parent_window)
-
-
-#driver.find_element(By.ID, 'btnSalvarJS').click()
-
-#Incomplete
-# **************** #
 
 driver.find_element(By.ID, 'tabAba1').click()
 
 for i in range(0, len(EXC)):
     ItemCode = int(EXC['Código Portal'][i])
+
     print('Inserindo Item: ' + str(ItemCode))
     # Including Individual Itens #
     driver.find_element(By.ID, 'ctl00_conteudoPagina_btnIncluir').click()
@@ -102,13 +101,35 @@ for i in range(0, len(EXC)):
     driver.switch_to.window(parent_window)
     sleep(3)
     print('Item inserido na SC\n')
+
     # ************************** #
     sleep(0.5) #Debug wait
-print('Solicitação Finalizada ' + SolicitationCode)
 
-#acessar centro de custo
-#Sistemas embarcados(305)
-#Ação: Outros
-#Fonte: Projeto
-#Gestor: 
-#Fiscal
+
+idx = 2
+for i in range(0, len(EXC)):
+
+    PartNumber = (EXC['Part Number'][i])
+    Qnty = int(EXC['Quantidade'][i])
+
+    #TEST
+    sleep(1)
+    driver.find_element(By.ID, 'tbxDsOrdemCompra').clear()
+    driver.find_element(By.ID, 'tbxDsOrdemCompra').send_keys(PartNumber)
+    driver.find_element(By.ID, 'ctl00_conteudoPagina_btPesquisar').click()
+    sleep(2)
+    for s in range(0, Qnty):
+        driver.find_element(By.XPATH, '//*[@id="tblPesquisa"]/tbody/tr['+str(idx)+']/td[1]/span[2]/span/span/span[1]/span').click()
+        
+    sleep(0.5)
+    driver.find_element(By.XPATH, '//*[@id="tblPesquisa"]/tbody/tr['+str(idx)+']/td[3]/span[2]/span/span/span').click()
+    sleep(1)  
+    driver.find_element(By.CSS_SELECTOR, 'td[class="k-today k-state-focused"]').click()              
+
+    idx = int(idx)
+    idx = idx + 3
+
+    #END TEST
+driver.find_element(By.ID, "ctl00_conteudoBotoes_btSalvar").click()
+
+print('Solicitação Finalizada ' + SolicitationCode)

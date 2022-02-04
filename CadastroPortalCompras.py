@@ -1,30 +1,48 @@
 import logging
-import openpyxl
+from openpyxl import Workbook, load_workbook
 import pandas as pd
 from time import sleep
-from pandas import ExcelFile
 from datetime import datetime
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support.ui import Select
 from selenium.webdriver.common.alert import Alert
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.support import expected_conditions as EC
-import os
+from selenium.common.exceptions import SessionNotCreatedException
+import getpass
+from xlrd import open_workbook
+from xlutils.copy import copy
 
 
-driver = webdriver.Chrome("C:\\Users\\guiga\\Documents\\PyScripts\\ExternalDrivers\\chromedriver.exe")
-path = os.getcwd()
-print(path)
-EXC = pd.ExcelFile(".\\VirtualEnv\\MyScripts\\TR1.xlsx")
+
+VERSION = '1.0.2'
+
+
+print('______________________________________________________')
+print("Automatização de Cadastro do Portal de Compras FIEB")
+print('Versão ' + VERSION)
+print("Desenvolvido por Guilherme Freire")
+print('______________________________________________________\n\n')
+
+user = input("Usuário: ")
+passw = getpass.getpass('Senha: ')
+
+try:
+    driver = webdriver.Chrome(".\\chromedriver.exe")
+except SessionNotCreatedException:
+    print('\n\nVersão do driver incompatível!')
+    print('Necessário realizar o download do driver com versão adequada ao seu navegador')
+    input('[Pressione ENTER para encerrar]')
+    exit()
+
+XL_PATH = ".\\Cadastro.xlsx"
+EXC = pd.ExcelFile(XL_PATH)
 EXC = pd.ExcelFile.parse(EXC)
+
 
 # ******************************** First Loggin ********************************** #
 driver.get('https://compras.fieb.org.br/core/default.aspx?U=637719883608560754')
-driver.find_element(By.ID,'ctl00_ctl11_tbxLogin').send_keys('guilherme.freire')
-driver.find_element(By.ID,'ctl00_ctl11_tbxSenha').send_keys('meridian99')
+driver.find_element(By.ID,'ctl00_ctl11_tbxLogin').send_keys(user)
+driver.find_element(By.ID,'ctl00_ctl11_tbxSenha').send_keys(passw)
 driver.find_element(By.ID,'ctl00_ctl11_btnAcessar').click()
 sleep(2)
 # ******************************************************************************* #
@@ -40,7 +58,7 @@ for i in range(0, len(EXC)):
 
     driver.get('https://compras.fieb.org.br/core/empresa/produto/produtoManutencao.aspx?q=R0EFSutZFtEZXvMQhyOKWjrBOU6tYrAx_1ANwAB9haqEl54GYHsvxoKMhTtBD56o3mPcWTWAtwlROjlBpflmlg==')
     driver.find_element(By.ID,'img').click()
-    print("\nCurrent Window: " + driver.title + "\nCadastrando item: " + PartNumber)
+    #print("\nCurrent Window: " + driver.title + "\nCadastrando item: " + PartNumber)
     parent_window = driver.current_window_handle
     sleep(1)
     child_window = driver.window_handles[1]
@@ -63,7 +81,7 @@ for i in range(0, len(EXC)):
     sleep(1)
     PopUp = Alert(driver)
     PopUp.accept()
-    ItemCode = driver.find_element(By.ID,'_cPRODUTO_x_sCdProdutoEmpresa').text
+    ItemCode = driver.find_element(By.ID,'td_cPRODUTO_x_sCdProdutoEmpresa').text
     sleep(2)
     driver.find_element(By.ID,'tabAba11').click()
     sleep(1)
@@ -73,11 +91,19 @@ for i in range(0, len(EXC)):
     PopUp = Alert(driver)
     PopUp.accept()
     print('Item Cadastrado')
-    with open ('PartNumber_Log - ' + Current_Date + '.txt', 'a') as log_file:
+    with open ('.\\PartNumber_Log - ' + Current_Date + '.txt', 'a') as log_file:
         log_file.write(str(datetime.now())[0:19] + ' > ')
         log_file.write(PartNumber + ' - Codigo Portal: ' + ItemCode + '\n')
     # Approving item #
     sleep(0.5)
+
+# TESTE
+    workbook = load_workbook(filename=XL_PATH)
+    sheet = workbook.active
+    sheet["D"+str(i+2)] = ItemCode
+    workbook.save(filename=XL_PATH)
+    sleep(1000)
+#
     driver.find_element(By.XPATH,'//*[@id="tabAbas"]/tbody/tr/td/table[1]/tbody/tr/td[2]/a').click()
     driver.find_element(By.ID,'btnEnviarAprovacao').click() #Send to be approved
     sleep(1)
@@ -87,4 +113,3 @@ for i in range(0, len(EXC)):
     ##################
     sleep(2)
 print('Processo Finalizado')
-
