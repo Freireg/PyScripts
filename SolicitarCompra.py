@@ -19,7 +19,7 @@ from selenium.common.exceptions import SessionNotCreatedException
 import getpass
 
 
-VERSION = '1.0.2'
+VERSION = '1.1.1'
 
 
 print('______________________________________________________')
@@ -32,7 +32,14 @@ print('______________________________________________________\n\n')
 
 user = input("Usuário: ")
 passw = getpass.getpass('Senha: ')
+projectType = int(input("Projeto Embrapi?\n1 -> Sim\n2 -> Não\nFavor indicar: "))
 
+if(projectType == 1):
+    pType = "Embrapii"
+elif(projectType == 2):
+    pType = "Aquisição de materiais"
+else:
+    print("Argumento inválido")
 
 try:
     driver = webdriver.Chrome(".\\chromedriver.exe")
@@ -57,7 +64,7 @@ sleep(2)
 
 # Creating a New Solicitation #
 driver.get('https://compras.fieb.org.br/ordemcompra/OrdemCompraManutencao.aspx')
-driver.find_element(By.ID, '_cORDEM_COMPRA_x_nCdTipoOrdemCompra').send_keys('Aquisição de materiais')
+driver.find_element(By.ID, '_cORDEM_COMPRA_x_nCdTipoOrdemCompra').send_keys(pType)
 driver.find_element(By.ID, '_cORDEM_COMPRA_x_sDsOrdemCompra').send_keys(SolicitationDesc)
 driver.find_element(By.ID, '_cORDEM_COMPRA_x_sDsJustificativa').send_keys(SolicitationMotive)
 driver.find_element(By.ID, '_cORDEM_COMPRA_x_nCdAplicacao').send_keys('Orçamento')
@@ -68,7 +75,7 @@ parent_window = driver.current_window_handle
 sleep(1)
 child_window = driver.window_handles[1]
 driver.switch_to.window(child_window)
-driver.find_element(By.ID,'ckbClasse_1465').click()
+driver.find_element(By.ID,'ckbClasse_1433').click()
 driver.switch_to.window(parent_window)
 sleep(1)
 driver.find_element(By.ID, 'btnSalvar').click()
@@ -112,7 +119,7 @@ for i in range(0, len(EXC)):
     PartNumber = (EXC['Part Number'][i])
     Qnty = int(EXC['Quantidade'][i])
 
-    #TEST
+    
     sleep(1)
     driver.find_element(By.ID, 'tbxDsOrdemCompra').clear()
     driver.find_element(By.ID, 'tbxDsOrdemCompra').send_keys(PartNumber)
@@ -129,7 +136,7 @@ for i in range(0, len(EXC)):
     idx = int(idx)
     idx = idx + 3
 
-    #END TEST
+    
 driver.find_element(By.ID, "ctl00_conteudoBotoes_btSalvar").click()
 
 print('Solicitação Finalizada ' + SolicitationCode)
