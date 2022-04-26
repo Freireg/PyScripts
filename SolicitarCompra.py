@@ -19,7 +19,7 @@ from selenium.common.exceptions import SessionNotCreatedException
 import getpass
 
 
-VERSION = '1.1.1'
+VERSION = '1.2.0'
 
 
 print('______________________________________________________')
@@ -89,7 +89,7 @@ print(SolicitationCode)
 driver.find_element(By.ID, 'tabAba1').click()
 
 for i in range(0, len(EXC)):
-    ItemCode = int(EXC['Código Portal'][i])
+    ItemCode = int(EXC['Part Number'][i])
 
     print('Inserindo Item: ' + str(ItemCode))
     # Including Individual Itens #
@@ -99,7 +99,7 @@ for i in range(0, len(EXC)):
     sleep(1)
     child_window = driver.window_handles[1]
     driver.switch_to.window(child_window)
-    driver.find_element(By.ID, 'ctl00_campoPesquisa_txtProduto').send_keys(ItemCode)
+    driver.find_element(By.ID, 'ctl00_campoPesquisa_sDsProduto').send_keys(ItemCode)
     driver.find_element(By.ID, 'ctl00_btnPesquisar').click()
     sleep(1)
     driver.find_element(By.ID, 'ckbList').click()
