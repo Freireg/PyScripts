@@ -92,7 +92,7 @@ print(SolicitationCode)
 driver.find_element(By.ID, 'tabAba1').click()
 
 for i in range(0, len(EXC)):
-    ItemCode = int(EXC['Part Number'][i])
+    ItemCode = str(EXC['Part Number'][i])
 
     print('Inserindo Item: ' + str(ItemCode))
     # Including Individual Itens #
