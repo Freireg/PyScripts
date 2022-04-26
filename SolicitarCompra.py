@@ -19,7 +19,7 @@ from selenium.common.exceptions import SessionNotCreatedException
 import getpass
 
 
-VERSION = '1.2.0'
+VERSION = '1.2.1'
 
 
 print('______________________________________________________')
@@ -50,6 +50,9 @@ except SessionNotCreatedException:
     exit()
 EXC = pd.ExcelFile(".\\Cadastro.xlsx")
 EXC = pd.ExcelFile.parse(EXC)
+options = webdriver.ChromeOptions()
+options.add_experimental_option('excludeSwitches', ['enable-logging'])
+driver = webdriver.Chrome(options=options)
 
 SolicitationDesc = str(EXC['Resumo'][0])#str(input('Resumo da SC: '))
 SolicitationMotive = str(EXC['Justificativa'][0])#str(input('Justificativa: '))
