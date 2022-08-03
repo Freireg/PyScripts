@@ -14,7 +14,9 @@ from xlutils.copy import copy
 
 
 
-VERSION = '1.0.2'
+VERSION = '1.1.0'
+LAST_UPDATE = '03/08/22'
+
 
 
 print('______________________________________________________')
@@ -83,17 +85,18 @@ for i in range(0, len(EXC)):
     PopUp.accept()
     ItemCode = driver.find_element(By.ID,'td_cPRODUTO_x_sCdProdutoEmpresa').text
     sleep(2)
-    driver.find_element(By.ID,'tabAba11').click()
-    sleep(1)
-    driver.find_element(By.ID,'check_64').click()
-    driver.find_element(By.ID,'ctl00_conteudoBotoes_btnConfirmar').click()
-    sleep(1)
-    PopUp = Alert(driver)
-    PopUp.accept()
+    #   Removed the second tab from website  #
+    #driver.find_element(By.ID,'tabAba11').click()
+    #sleep(1)
+    #driver.find_element(By.ID,'check_64').click()
+    #driver.find_element(By.ID,'ctl00_conteudoBotoes_btnConfirmar').click()
+    #sleep(1)
+    #PopUp = Alert(driver)
+    #PopUp.accept()
     print('Item Cadastrado')
-    with open ('.\\PartNumber_Log - ' + Current_Date + '.txt', 'a') as log_file:
-        log_file.write(str(datetime.now())[0:19] + ' > ')
-        log_file.write(PartNumber + ' - Codigo Portal: ' + ItemCode + '\n')
+    #with open ('.\\PartNumber_Log - ' + Current_Date + '.txt', 'a') as log_file:
+    #    log_file.write(str(datetime.now())[0:19] + ' > ')
+    #    log_file.write(PartNumber + ' - Codigo Portal: ' + ItemCode + '\n')
     # Approving item #
     sleep(0.5)
 
@@ -102,9 +105,9 @@ for i in range(0, len(EXC)):
     sheet = workbook.active
     sheet["D"+str(i+2)] = ItemCode
     workbook.save(filename=XL_PATH)
-    sleep(1000)
+    sleep(1)
 #
-    driver.find_element(By.XPATH,'//*[@id="tabAbas"]/tbody/tr/td/table[1]/tbody/tr/td[2]/a').click()
+#    driver.find_element(By.XPATH,'//*[@id="tabAbas"]/tbody/tr/td/table[1]/tbody/tr/td[2]/a').click()
     driver.find_element(By.ID,'btnEnviarAprovacao').click() #Send to be approved
     sleep(1)
     PopUp = Alert(driver)
