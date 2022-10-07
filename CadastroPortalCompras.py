@@ -14,8 +14,8 @@ from xlutils.copy import copy
 
 
 
-VERSION = '1.1.0'
-LAST_UPDATE = '03/08/22'
+VERSION = '1.2.0'
+LAST_UPDATE = '07/10/22'
 
 
 
@@ -86,13 +86,13 @@ for i in range(0, len(EXC)):
     ItemCode = driver.find_element(By.ID,'td_cPRODUTO_x_sCdProdutoEmpresa').text
     sleep(2)
     #   Removed the second tab from website  #
-    #driver.find_element(By.ID,'tabAba11').click()
-    #sleep(1)
-    #driver.find_element(By.ID,'check_64').click()
-    #driver.find_element(By.ID,'ctl00_conteudoBotoes_btnConfirmar').click()
-    #sleep(1)
-    #PopUp = Alert(driver)
-    #PopUp.accept()
+    driver.find_element(By.ID,'tabAba11').click()
+    sleep(1)
+    driver.find_element(By.ID,'check_64').click()
+    driver.find_element(By.ID,'ctl00_conteudoBotoes_btnConfirmar').click()
+    sleep(1)
+    PopUp = Alert(driver)
+    PopUp.accept()
     print('Item Cadastrado')
     #with open ('.\\PartNumber_Log - ' + Current_Date + '.txt', 'a') as log_file:
     #    log_file.write(str(datetime.now())[0:19] + ' > ')
@@ -100,7 +100,7 @@ for i in range(0, len(EXC)):
     # Approving item #
     sleep(0.5)
 
-# TESTE
+# Saving registered item
     workbook = load_workbook(filename=XL_PATH)
     sheet = workbook.active
     sheet["D"+str(i+2)] = ItemCode
