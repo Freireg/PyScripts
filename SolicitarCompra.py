@@ -19,7 +19,7 @@ from selenium.common.exceptions import SessionNotCreatedException
 import getpass
 
 
-VERSION = '1.2.1'
+VERSION = '1.2.2'
 
 
 print('______________________________________________________')
@@ -92,7 +92,7 @@ print(SolicitationCode)
 driver.find_element(By.ID, 'tabAba1').click()
 
 for i in range(0, len(EXC)):
-    ItemCode = str(EXC['Part Number'][i])
+    ItemCode = str(EXC['Description'][i])
 
     print('Inserindo Item: ' + str(ItemCode))
     # Including Individual Itens #

@@ -75,10 +75,13 @@ for i in range(0, len(EXC)):
     sleep(0.5)
     driver.find_element(By.XPATH,'//*[@id="_cPRODUTO_x_nCdUnidadeMedida_listbox"]/li[43]').click()
 
-    if(AltPartNumber == 'nan'):
-        driver.find_element(By.ID,'_cPRODUTO_x_sDsProduto').send_keys(Description + ' - ' + PartNumber)
+    if(PartNumber == 'nan'):
+        driver.find_element(By.ID,'_cPRODUTO_x_sDsProduto').send_keys(Description)
     else:
-        driver.find_element(By.ID,'_cPRODUTO_x_sDsProduto').send_keys(Description + ' - ' + PartNumber + ' ou ' + AltPartNumber)
+        if(AltPartNumber == 'nan'):
+            driver.find_element(By.ID,'_cPRODUTO_x_sDsProduto').send_keys(Description + ' - ' + PartNumber)
+        else:
+            driver.find_element(By.ID,'_cPRODUTO_x_sDsProduto').send_keys(Description + ' - ' + PartNumber + ' ou ' + AltPartNumber)
     driver.find_element(By.ID,'btnSalvarJS').click()
     sleep(1)
     PopUp = Alert(driver)
@@ -107,7 +110,7 @@ for i in range(0, len(EXC)):
     workbook.save(filename=XL_PATH)
     sleep(1)
 #
-#    driver.find_element(By.XPATH,'//*[@id="tabAbas"]/tbody/tr/td/table[1]/tbody/tr/td[2]/a').click()
+    driver.find_element(By.XPATH,'//*[@id="tabAbas"]/tbody/tr/td/table[1]/tbody/tr/td[2]/a').click()
     driver.find_element(By.ID,'btnEnviarAprovacao').click() #Send to be approved
     sleep(1)
     PopUp = Alert(driver)
